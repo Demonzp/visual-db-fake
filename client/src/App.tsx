@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import NavHead from './components/nav-head';
-import DbCreator from './pages/db-creator';
+import DbManager from './pages/db-manager';
 import Home from './pages/home';
 import { ERoutes } from './types/rotutes';
 
@@ -15,7 +15,7 @@ const App = () => {
         />
         <Route
           path={ERoutes.DB_CREATOR}
-          element={<DbCreator />}
+          element={<DbManager />}
         />
       </Routes>
     </div>

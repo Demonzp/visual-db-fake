@@ -1,0 +1,11 @@
+.left-panel{
+  display: flex;
+  max-width: 600;
+  height: 100%;
+  background-color: antiquewhite;
+  flex-flow: column;
+}
+
+.head{
+  margin-bottom: 10px;
+}

@@ -1,16 +1,16 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 export enum EFielTypes {
-  INT='int',
-  STRING='str',
-  VARCHAR='varchar',
-  DATE='date'
+  INT = 'int',
+  STRING = 'str',
+  VARCHAR = 'varchar',
+  DATE = 'date'
 }
 
 export enum EFieldIndex {
   PRIMERY = 'prymery',
   UNIQUE = 'unique',
-  INDEX='index'
+  INDEX = 'index'
 }
 
 export enum EDialects {
@@ -19,10 +19,11 @@ export enum EDialects {
 }
 
 export interface IField {
-  type: EFielTypes,
-  valueOrLenght: 'string'|number,
-  autoIncrement?:boolean,
-  index?: EFieldIndex
+  name: string;
+  type: EFielTypes;
+  valueOrLenght?: string | number;
+  autoIncrement?: boolean;
+  index?: EFieldIndex;
 }
 
 export interface ITable {
@@ -32,12 +33,44 @@ export interface ITable {
 
 export interface IDBState {
   dialect: EDialects;
+  id: string;
   tables: ITable[];
+  isLoading: boolean;
+}
+
+const tTable:ITable = {
+  name:'user',
+  fieds:[
+    {
+      name: 'first-name',
+      type: EFielTypes.STRING
+    },
+    {
+      name: 'second-name',
+      type: EFielTypes.STRING
+    }
+  ]
+}
+
+const tTable2:ITable = {
+  name:'korzina',
+  fieds:[
+    {
+      name: 'product',
+      type: EFielTypes.STRING
+    },
+    {
+      name: 'price',
+      type: EFielTypes.INT
+    }
+  ]
 }
 
 const initialState: IDBState = {
   dialect: EDialects.MySql,
-  tables: []
+  id: '',
+  tables: [tTable, tTable2],
+  isLoading: false
 };
 
 const sliceDB = createSlice({
