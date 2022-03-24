@@ -29,6 +29,7 @@ export interface IField {
 export interface ITable {
   name: string;
   fieds: IField[];
+  length: number;
 }
 
 export interface IDBState {
@@ -43,13 +44,14 @@ const tTable:ITable = {
   fieds:[
     {
       name: 'first-name',
-      type: EFielTypes.STRING
+      type: EFielTypes.STRING,
     },
     {
       name: 'second-name',
       type: EFielTypes.STRING
     }
-  ]
+  ],
+  length: 0
 }
 
 const tTable2:ITable = {
@@ -63,12 +65,13 @@ const tTable2:ITable = {
       name: 'price',
       type: EFielTypes.INT
     }
-  ]
+  ],
+  length: 0
 }
 
 const initialState: IDBState = {
   dialect: EDialects.MySql,
-  id: '',
+  id: 'argaerg21',
   tables: [tTable, tTable2],
   isLoading: false
 };

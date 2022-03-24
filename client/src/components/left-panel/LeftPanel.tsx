@@ -1,4 +1,5 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import UseDbCreator from '../../hooks/useDbCreator';
 import CustomInput from '../custom-input';
 import ModalCard from '../modal-card';
@@ -7,8 +8,9 @@ import TablePanelItem from '../table-panel-item';
 import styles from './left-panel.module.css';
 
 const LeftPanel = () => {
-  const { tables } = UseDbCreator();
+  const { tables, id } = UseDbCreator();
   const [show, setShow] = useState(false);
+  const navigate = useNavigate();
 
   const toggle = ()=>setShow(prev=>!prev);
 
@@ -20,7 +22,7 @@ const LeftPanel = () => {
         </ModalCard>
       </ModalWin>
       <div className={styles.head}>
-        <label>DBId</label>
+        <label>{id}</label>
       </div>
       <button onClick={toggle}>create table</button>
       <br></br>
