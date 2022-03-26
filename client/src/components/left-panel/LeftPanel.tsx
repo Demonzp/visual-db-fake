@@ -15,21 +15,28 @@ const LeftPanel = () => {
   const toggle = ()=>setShow(prev=>!prev);
 
   return (
-    <div className={styles['left-panel']}>
-      <ModalWin show={show} onHide={toggle}>
-        <ModalCard title='Create new Table'>
-         <CustomInput label='name table:'/>
-        </ModalCard>
-      </ModalWin>
-      <div className={styles.head}>
-        <label>{id}</label>
-      </div>
-      <button onClick={toggle}>create table</button>
-      <br></br>
-      {tables.map(t=>{
-        return <TablePanelItem key={t.name} table={t}/>
-      })}
-    </div>
+    <Fragment>
+      {id?
+        <div className={styles['left-panel']}>
+          <ModalWin show={show} onHide={toggle}>
+            <ModalCard title='Create new Table'>
+            <CustomInput label='name table:'/>
+            </ModalCard>
+          </ModalWin>
+          <div className={styles.head}>
+            <label>{id}</label>
+          </div>
+          <button onClick={toggle}>create table</button>
+          <br></br>
+          {tables.map(t=>{
+            return <TablePanelItem key={t.name} table={t}/>
+          })}
+        </div>
+        :
+        null
+      }
+    </Fragment>
+    
   )
 };
 

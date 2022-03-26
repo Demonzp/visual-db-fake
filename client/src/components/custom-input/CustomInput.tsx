@@ -2,10 +2,11 @@ import React from 'react';
 import styles from './custom-input.module.css';
 
 type Props={
-  label?:string
+  label?:string,
+  value?:string
 }
 
-const CustomInput:React.FC<Props> = ({label})=>{
+const CustomInput:React.FC<Props> = ({label, value})=>{
   return(
     <div className={styles.cont}>
       {
@@ -15,7 +16,7 @@ const CustomInput:React.FC<Props> = ({label})=>{
         null
       }
       
-      <input type='text'/>
+      <input type='text' value={value}/>
     </div>
   );
 };

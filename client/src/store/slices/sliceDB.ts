@@ -1,9 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { changeTableFieldType } from '../actions/db';
 
 export enum EFielTypes {
   INT = 'int',
   STRING = 'str',
-  VARCHAR = 'varchar',
   DATE = 'date'
 }
 
@@ -21,7 +21,8 @@ export enum EDialects {
 export interface IField {
   name: string;
   type: EFielTypes;
-  valueOrLenght?: string | number;
+  valueOrLenght?: string;
+  defaulValue?: string | number | null | boolean;
   autoIncrement?: boolean;
   index?: EFieldIndex;
 }
@@ -71,8 +72,8 @@ const tTable2:ITable = {
 
 const initialState: IDBState = {
   dialect: EDialects.MySql,
-  id: 'argaerg21',
-  tables: [tTable, tTable2],
+  id: '',
+  tables: [],
   isLoading: false
 };
 
@@ -83,6 +84,14 @@ const sliceDB = createSlice({
 
   },
   extraReducers: (builder) => {
+    builder.addCase(changeTableFieldType.fulfilled, (state, { payload }) => {
+      state.tables = state.tables.map(t=>{
+        if(t.name===payload.name){
+          return payload;
+        }
+        return t;
+      });
+    });
   }
 });
 

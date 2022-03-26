@@ -1,9 +1,11 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import sliceDB from './slices/sliceDB';
+import sliceDBList from './slices/sliceDBList';
 
 export const store = configureStore({
   reducer: {
     db: sliceDB.reducer,
+    dbList: sliceDBList.reducer
   },
 });
 
