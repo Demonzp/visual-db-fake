@@ -1,5 +1,7 @@
 .card{
   /* position: absolute; */
+  display: flex;
+  flex-direction: column;
   margin-top: 1.75rem;
   margin-bottom: 1.75rem;
   z-index: 2;

@@ -1,5 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { changeTableFieldType } from '../actions/db';
+import { ICustomError } from '../../types/errors';
+import { changeTableFieldType, createDBTable, getDBTables } from '../actions/db';
+import { getDbList } from '../actions/dbList';
 
 export enum EFielTypes {
   INT = 'int',
@@ -8,6 +10,7 @@ export enum EFielTypes {
 }
 
 export enum EFieldIndex {
+  NONE = 'none',
   PRIMERY = 'prymery',
   UNIQUE = 'unique',
   INDEX = 'index'
@@ -18,61 +21,53 @@ export enum EDialects {
   Postgress = 'postgress'
 }
 
+export enum EFieldKeys {
+  NAME = 'name',
+  TYPE = 'type',
+  VALUE_OR_LENGTH = 'valueOrLenght',
+  DEFAULT_VALUE = 'defaultValue',
+  AUTO_INCREMENT = 'autoIncrement',
+  INDEX = 'index'
+}
+
 export interface IField {
-  name: string;
-  type: EFielTypes;
-  valueOrLenght?: string;
-  defaulValue?: string | number | null | boolean;
-  autoIncrement?: boolean;
-  index?: EFieldIndex;
+  [EFieldKeys.NAME]: string;
+  [EFieldKeys.TYPE]: EFielTypes;
+  [EFieldKeys.VALUE_OR_LENGTH]: string;
+  [EFieldKeys.DEFAULT_VALUE]: string | number | null | boolean;
+  [EFieldKeys.AUTO_INCREMENT]: boolean;
+  [EFieldKeys.INDEX]: EFieldIndex;
 }
 
 export interface ITable {
   name: string;
-  fieds: IField[];
-  length: number;
+  fields: IField[];
+  version: number;
+  rows: number;
+}
+
+export interface IDB {
+  dialect: EDialects;
+  id: string;
+  createAt: number;
+  changeAt: number;
+  version: number;
 }
 
 export interface IDBState {
-  dialect: EDialects;
-  id: string;
+  dbInfo: IDB;
   tables: ITable[];
   isLoading: boolean;
 }
 
-const tTable:ITable = {
-  name:'user',
-  fieds:[
-    {
-      name: 'first-name',
-      type: EFielTypes.STRING,
-    },
-    {
-      name: 'second-name',
-      type: EFielTypes.STRING
-    }
-  ],
-  length: 0
-}
-
-const tTable2:ITable = {
-  name:'korzina',
-  fieds:[
-    {
-      name: 'product',
-      type: EFielTypes.STRING
-    },
-    {
-      name: 'price',
-      type: EFielTypes.INT
-    }
-  ],
-  length: 0
-}
-
 const initialState: IDBState = {
-  dialect: EDialects.MySql,
-  id: '',
+  dbInfo: {
+    dialect: EDialects.MySql,
+    id: '',
+    createAt: 0,
+    changeAt: 0,
+    version: 0,
+  },
   tables: [],
   isLoading: false
 };
@@ -84,13 +79,59 @@ const sliceDB = createSlice({
 
   },
   extraReducers: (builder) => {
+
+    builder.addCase(getDbList.pending, (state) => {
+      state.dbInfo = {
+        ...initialState.dbInfo
+      };
+    });
+
     builder.addCase(changeTableFieldType.fulfilled, (state, { payload }) => {
-      state.tables = state.tables.map(t=>{
-        if(t.name===payload.name){
+      state.tables = state.tables.map(t => {
+        if (t.name === payload.name) {
           return payload;
         }
         return t;
       });
+    });
+
+    builder.addCase(getDBTables.pending, (state) => {
+      state.isLoading = true;
+    });
+
+    builder.addCase(getDBTables.fulfilled, (state, { payload }) => {
+      state.dbInfo = {
+        ...payload.db
+      };
+
+      state.tables = payload.tables;
+      state.isLoading = false;
+    });
+
+    builder.addCase(getDBTables.rejected, (state) => {
+      //const payload = action.payload as ICustomError;
+      //state.errors.push(payload);
+      state.isLoading = false;
+    });
+
+    builder.addCase(createDBTable.pending, (state) => {
+      state.isLoading = true;
+    });
+
+    builder.addCase(createDBTable.fulfilled, (state, { payload }) => {
+      state.dbInfo = {
+        ...payload.db
+      };
+
+      state.tables.push(payload.table);
+      state.isLoading = false;
+      console.log('тут!!!!!!!!!');
+    });
+
+    builder.addCase(createDBTable.rejected, (state) => {
+      //const payload = action.payload as ICustomError;
+      //state.errors.push(payload);
+      state.isLoading = false;
     });
   }
 });

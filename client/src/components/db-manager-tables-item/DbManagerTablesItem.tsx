@@ -18,7 +18,7 @@ const DbManagerTablesItem: React.FC<Props> = ({table})=>{
         </BtnLink>
       </td>
       <td>Actions</td>
-      <td>{table.length}</td>
+      <td>{table.rows}</td>
     </tr>
   );
 };

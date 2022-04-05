@@ -1,4 +1,4 @@
-const { access } = require('fs/promises');
+const { access, readFile } = require('fs/promises');
 const { constants } = require('fs');
 const path = require('path');
 
@@ -12,6 +12,16 @@ const isFileExist = async(_path)=>{
   }
 }
 
+const readJson = async(filePath)=>{
+  try {
+    const data = await readFile(filePath);
+    return JSON.parse(data);
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
-  isFileExist
+  isFileExist,
+  readJson
 }

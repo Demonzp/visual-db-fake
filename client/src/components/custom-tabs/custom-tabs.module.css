@@ -1,0 +1,11 @@
+.tab-btn{
+  width: 200px;
+  min-height: 90px;
+  background-color: lightgray;
+  border: 1px solid darkgray;
+}
+
+.active-tab-btn{
+  background-color: white;
+  border-bottom: none;
+}

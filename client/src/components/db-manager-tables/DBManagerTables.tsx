@@ -1,9 +1,9 @@
-import { useAppSelector } from "../../store/hooks";
-import DbManagerTablesItem from "../db-manager-tables-item";
+import { useAppSelector } from '../../store/hooks';
+import DbManagerTablesItem from '../db-manager-tables-item';
 
 const DbManagerTables = () => {
   const { tables } = useAppSelector(state => state.db);
-
+  
   return (
     <div>
       <table>
@@ -11,7 +11,7 @@ const DbManagerTables = () => {
           <tr>
             <th>TABLE</th>
             <th>ACTIONS</th>
-            <th>LENGTH</th>
+            <th>ROWS</th>
           </tr>
         </thead>
         <tbody>

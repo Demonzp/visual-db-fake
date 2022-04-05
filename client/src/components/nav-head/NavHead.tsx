@@ -1,35 +1,19 @@
-import React from 'react';
 import {
-  Link,
-  LinkProps,
-  useMatch,
-  useResolvedPath,
+  NavLinkProps,
 } from 'react-router-dom';
 
 import { ERoutes } from '../../types/rotutes';
+import CustomLink from '../custom-link/CustomLink';
 import styles from './nav-head.module.css';
 
-const CustomLink: React.FC<LinkProps> = ({ children, to, ...props }) => {
-  let resolved = useResolvedPath(to);
-  let match = useMatch({ path: resolved.pathname, end: true });
-
-  return (
-    <Link
-      className={match ? styles.active : ''}
-      to={to}
-      {...props}
-    >
-      {children}
-    </Link>
-  );
-}
+const setActive:NavLinkProps["className"] = ({isActive})=>isActive ? styles.active : undefined;
 
 const NavHead = () => {
   return (
     <nav className={styles.nav}>
       <div>
-        <CustomLink to={ERoutes.HOME}>Home</CustomLink>
-        <CustomLink to={ERoutes.DB_CREATOR}>Db-Creator</CustomLink>
+        <CustomLink to={ERoutes.HOME} className={setActive}>Home</CustomLink>
+        <CustomLink to={ERoutes.DB_CREATOR} className={setActive}>Db-Creator</CustomLink>
       </div>
     </nav>
   );

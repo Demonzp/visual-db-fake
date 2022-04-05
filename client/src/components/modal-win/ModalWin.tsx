@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import styles from './modal-win.module.css';
 
 type Props={
@@ -15,44 +15,25 @@ const ModalWin: React.FC<Props> = ({show, onHide, children})=>{
 
   const [newChild, setNewChild] = useState<React.ReactElement|undefined>();
 
-  const useOnHide = useCallback(()=>onHide(),[]);
-  const useOnHideKey = useCallback((e:KeyboardEvent)=>{
-    if(e.code==='Escape'){
-      onHide();
-    }
-  }, []);
-
   useEffect(()=>{
     if(children){
-      setNewChild(React.cloneElement(children, { onHide: useOnHide }));
+      setNewChild(React.cloneElement(children, { onHide }));
     }
-  }, [children, useOnHide]);
-
-  useEffect(()=>{
-    const node = modal.current as HTMLElement|null;
-    if(show){     
-      if(node){
-        document.body.addEventListener('keyup', useOnHideKey);
-
-        node.firstChild!.addEventListener('click', useOnHide);
-
-        document.body.append(node);
-      }
-    }else{
-      if(node){
-        node.firstChild!.removeEventListener('click', useOnHide);
-        document.body.removeEventListener('keyup', useOnHideKey);
-        node.remove();
-      }
-    }
-    
-  }, [show, modal]);
+  }, [children, onHide]);
 
   return(
-    <div ref={modal} className={styles.cont}>
-      <div ref={fon} className={styles.fon}></div>
-      {newChild}
-    </div>
+    <Fragment>
+      {
+        show?
+        <div ref={modal} className={styles.cont}>
+          <div ref={fon} className={styles.fon} onClick={onHide}></div>
+          {newChild}
+          {/* {children} */}
+        </div>
+        :
+        null
+      }   
+    </Fragment>
   );
 };
 

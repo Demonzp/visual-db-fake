@@ -1,3 +1,3 @@
-import DbManagerTables from './DBManagerTables';
+import DbManagerTables from './DbManagerTables';
 
 export default DbManagerTables;

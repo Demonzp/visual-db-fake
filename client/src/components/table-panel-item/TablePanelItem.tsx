@@ -35,7 +35,10 @@ const TablePanelItem: React.FC<Props> = ({table})=>{
     </BtnLink>
     {isOpen?
       <div>
-        {table.fieds.map(f=>{
+        <div className={styles.field}>
+          <p> </p>
+        </div>
+        {table.fields.map(f=>{
           return(
             <div key={f.name} className={styles.field}>
               <label>{f.name}</label>

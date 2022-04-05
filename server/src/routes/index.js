@@ -1,5 +1,7 @@
 const dbRouter = require('./dbRoute');
+const tableRouter = require('./tableRoute');
 
 module.exports = {
-  dbRouter
+  dbRouter,
+  tableRouter
 };

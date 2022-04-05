@@ -1,29 +1,26 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { ICustomError } from '../../types/errors';
 import { createDb, getDbList } from '../actions/dbList';
+import { IDB } from './sliceDB';
 
-export interface IDB {
-  id: string,
-  createAt: Date,
-  changeAt: Date,
-  version: number,
-  tables: string[]
+export interface IDBList extends IDB{
+  tables: string[];
 }
 
-export interface IDBList {
-  dbList: IDB[];
+export interface IDBListState {
+  dbList: IDBList[];
   isLoading: boolean;
   errors: ICustomError[];
 }
 
-const initialState: IDBList = {
+const initialState: IDBListState = {
   dbList: [],
   isLoading: false,
   errors: []
 };
 
 const sliceDBList = createSlice({
-  name: 'db',
+  name: 'dbList',
   initialState,
   reducers: {
 
@@ -52,6 +49,18 @@ const sliceDBList = createSlice({
 
     builder.addCase(createDb.pending, (state) => {
       state.isLoading = true;
+    });
+
+    builder.addCase(createDb.fulfilled, (state, { payload }) => {
+      state.dbList.push(payload);
+      console.log('payload = ', payload);
+      state.isLoading = false;
+    });
+
+    builder.addCase(createDb.rejected, (state, action) => {
+      const payload = action.payload as ICustomError;
+      state.errors.push(payload);
+      state.isLoading = false;
     });
   }
 });

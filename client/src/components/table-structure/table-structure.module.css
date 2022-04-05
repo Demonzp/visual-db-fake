@@ -1,0 +1,8 @@
+.cont-action{
+  display: flex;
+  justify-content: space-between;
+  padding-left: 30%;
+  padding-right: 30%;
+  margin-top: 30px;
+  background-color:cornsilk;
+}

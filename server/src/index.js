@@ -9,7 +9,7 @@ app.use(express.urlencoded({ extended: true }));
 
 const port = process.env.PORT || 5050;
 
-app.use('/api/', routes.dbRouter);
+app.use('/api/', routes.dbRouter, routes.tableRouter);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

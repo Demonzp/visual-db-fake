@@ -1,9 +1,14 @@
 .cont{
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
 }
 
 .label{
   padding-right: 10px;
+}
+
+.error{
+  background-color: rgb(252, 66, 66);
+  color: rgb(126, 0, 0);
 }
