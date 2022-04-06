@@ -24,7 +24,7 @@ interface IInitState {
 }
 
 const initialState: IInitState = {
-  isLoading: false,
+  isLoading: true,
   errorsValid: [],
   errors: [],
   fields: [],

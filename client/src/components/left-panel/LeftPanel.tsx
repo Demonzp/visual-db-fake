@@ -1,10 +1,9 @@
-import React, { Fragment, useState } from 'react';
-import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Fragment, useState } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import UseDbCreator from '../../hooks/useDbCreator';
-import CustomInput from '../custom-input';
 import FormHookInput from '../form-hook-input';
 import ModalCard from '../modal-card';
 import ModalCardActions from '../modal-card-actions/ModalCardActions';
@@ -13,10 +12,8 @@ import TablePanelItem from '../table-panel-item';
 
 import styles from './left-panel.module.css';
 import ComponentSpiner from '../component-spiner';
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { useAppDispatch } from '../../store/hooks';
 import { createDBTable } from '../../store/actions/db';
-import { ICustomValidationError } from '../../types/errors';
-import CustomValidationError from '../../utils/customValidationError';
 import { ETableTab } from '../../App';
 import BtnLink from '../btn-link';
 
@@ -32,7 +29,6 @@ const LeftPanel = () => {
   const { tables, id, isLoading } = UseDbCreator();
   const [show, setShow] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
   const [nameTable, setNameTable] = useState('');
   const dispatch = useAppDispatch();
 
@@ -47,15 +43,15 @@ const LeftPanel = () => {
     //console.log('data = ', data);
     dispatch(createDBTable(data.nameTable))
       .unwrap()
-      .then((data)=>{
+      .then((data) => {
         //console.log('then = ', data);
         setNameTable('');
         toggle();
         navigate(`${data.db.id}/${data.table.name}/${ETableTab.STRUCTURE}`);
       })
-      .catch((error)=>{
-        if(error.field){
-          setError((error.field as 'nameTable'),{
+      .catch((error) => {
+        if (error.field) {
+          setError((error.field as 'nameTable'), {
             type: "manual",
             message: error.message
           })
@@ -74,17 +70,17 @@ const LeftPanel = () => {
         <div className={styles['left-panel']}>
           <ModalWin show={show} onHide={toggle}>
             <ModalCard title='Create new Table'>
-              {isLoading?
+              {isLoading ?
                 <ComponentSpiner />
                 :
                 <Fragment>
                   <form onSubmit={handleSubmit(onSubmit)}>
-                    <FormHookInput 
-                      label='name of table: ' 
-                      name='nameTable' 
+                    <FormHookInput
+                      label='name of table: '
+                      name='nameTable'
                       value={nameTable}
                       errors={errors}
-                      onChange={(e)=>setNameTable(e.target.value)}
+                      onChange={(e) => setNameTable(e.target.value)}
                       register={register}
                     />
                   </form>
@@ -100,11 +96,18 @@ const LeftPanel = () => {
             <BtnLink to={id}>{id}</BtnLink>
             {/* <label>{id}</label> */}
           </div>
-          <button onClick={toggle}>create table</button>
-          <br></br>
-          {tables.map(t => {
-            return <TablePanelItem key={t.name} table={t} />
-          })}
+          {isLoading ?
+            <ComponentSpiner />
+            :
+            <Fragment>
+              <button onClick={toggle}>create table</button>
+              <br></br>
+              {tables.map(t => {
+                return <TablePanelItem key={t.name} table={t} />
+              })}
+            </Fragment>
+          }
+
         </div>
         :
         null

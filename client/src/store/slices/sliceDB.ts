@@ -74,7 +74,7 @@ const initialState: IDBState = {
     version: 0,
   },
   tables: [],
-  isLoading: false
+  isLoading: true
 };
 
 const sliceDB = createSlice({
@@ -102,6 +102,7 @@ const sliceDB = createSlice({
 
       state.tables = payload.tables;
       state.isLoading = false;
+      console.log('get getDBTables');
     });
 
     builder.addCase(getDBTables.rejected, (state) => {

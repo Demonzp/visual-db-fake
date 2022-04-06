@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Outlet, useHref, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ETableTab, TUrlParamsDbManager } from '../../App';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { clearState, setQuestion } from '../../store/slices/sliceTableStructure';
@@ -9,20 +9,21 @@ import ModalCardActions from '../modal-card-actions/ModalCardActions';
 import ModalWin from '../modal-win';
 
 const DbManagerTableMain = () => {
-  const { tableTab } = useParams<TUrlParamsDbManager>();
+  const { dbId, tableName, tableTab } = useParams<TUrlParamsDbManager>();
   const navigate = useNavigate();
   const location = useLocation();
   const { isQuestion } = useAppSelector(state => state.tableStructure);
+  const { isLoading, tables } = useAppSelector(state => state.db);
   const dispatch = useAppDispatch();
   const [show, setShow] = useState(false);
 
   const toggle = () => setShow(prev => !prev);
 
-  useEffect(()=>{
-    if(!show){
+  useEffect(() => {
+    if (!show) {
       dispatch(setQuestion(false));
     }
-  },[show]);
+  }, [show]);
 
   useEffect(() => {
     if (!tableTab) {
@@ -31,17 +32,28 @@ const DbManagerTableMain = () => {
   }, [tableTab]);
 
   useEffect(() => {
+    if (!isLoading && tableName) {
+      console.log('isLoading = ', isLoading);
+      if(!tables.find(t=>t.name===tableName)){
+        if(dbId){
+          navigate(`../../${dbId}`);
+        }
+      }
+    }
+  }, [isLoading]);
+
+  useEffect(() => {
     if (isQuestion) {
       //console.log('isQuestion = ', location);
       toggle();
     }
   }, [isQuestion]);
 
-  const continueHandle = ()=>{
+  const continueHandle = () => {
     toggle();
     dispatch(clearState());
-    const path = (location.state as {from:{pathname:string}}).from.pathname;
-    console.log('path = ', path);
+    const path = (location.state as { from: { pathname: string } }).from.pathname;
+    //console.log('path = ', path);
     navigate(path, { replace: true });
   };
 
