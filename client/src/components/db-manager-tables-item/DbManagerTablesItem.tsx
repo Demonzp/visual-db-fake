@@ -17,6 +17,9 @@ const DbManagerTablesItem: React.FC<Props> = ({table})=>{
           {table.name}
         </BtnLink>
       </td>
+      <td>{table.createAt}</td>
+      <td>{table.changeAt}</td>
+      <td>{table.version}</td>
       <td>Actions</td>
       <td>{table.rows}</td>
     </tr>

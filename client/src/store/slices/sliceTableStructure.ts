@@ -1,4 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { ETypeCustomErrors, ICustomError, ICustomValidationError } from '../../types/errors';
+import CustomValidationError from '../../utils/customValidationError';
+import { changeFields } from '../actions/tableStructure';
 import { IField } from './sliceDB';
 
 export interface IStructureField extends IField{
@@ -13,6 +16,8 @@ export type TChangeField = {
 
 interface IInitState {
   isLoading: boolean;
+  errors: ICustomError[];
+  errorsValid: ICustomValidationError []; 
   isSave: boolean;
   fields: IStructureField[];
   isQuestion: boolean;
@@ -20,6 +25,8 @@ interface IInitState {
 
 const initialState: IInitState = {
   isLoading: false,
+  errorsValid: [],
+  errors: [],
   fields: [],
   isSave: true,
   isQuestion: false
@@ -71,7 +78,29 @@ const sliceTableStructure = createSlice({
     },
   },
   extraReducers: (builder) => {
+    builder.addCase(changeFields.pending, (state) => {
+      state.errors = [];
+      state.errorsValid = [];
+      state.isLoading = true;
+    });
 
+    builder.addCase(changeFields.fulfilled, (state, { payload }) => {
+      state.fields = payload.fields;
+      state.isLoading = false;
+      state.isSave = true;
+    });
+
+    builder.addCase(changeFields.rejected, (state, action) => {
+      //console.log('rejected.action.payload = ', action.payload);
+      if((action.payload as ICustomError).errorName===ETypeCustomErrors.VALID_ERROR){
+        state.errorsValid = (action.payload as CustomValidationError).errors;
+        console.log('rejected.action.payload = ', action.payload);
+      }else{
+        state.errors = action.payload as ICustomError[];
+      }
+
+      state.isLoading = false;
+    });
   }
 });
 

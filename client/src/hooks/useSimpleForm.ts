@@ -1,11 +1,13 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import joi from 'joi';
 import * as yup from 'yup';
 import { TAppValidateError} from '../types/errors';
 
 export type TReturn<T> = {errors?:TAppValidateError, values:T}
 
-type TOnChange<T> = (d:{name:keyof T, value: string|number|boolean})=>void
+type TOnChange<T> = (d:{name:keyof T, value: string|number|boolean})=>void;
+
+type TClearError = (d:string)=>void;
 
 type THandleSubmit<T> = ()=> TReturn<T>;
 
@@ -16,7 +18,9 @@ const useSimpleForm = <T extends {}>({state, joiShema, yupShema}:{
 }):{
   data: T,
   errors: TAppValidateError,
+  clearError: TClearError,
   onChange: TOnChange<T>,
+  setErrors: React.Dispatch<React.SetStateAction<TAppValidateError>>
   handleSubmit: THandleSubmit<T>
 }=>{
   const [data, setData] = useState<T>(state);
@@ -34,21 +38,25 @@ const useSimpleForm = <T extends {}>({state, joiShema, yupShema}:{
       }
     });
 
+    clearError(name as string);
+  };
+
+  const clearError:TClearError = (name)=>{
     setErrors(prev=>{
       const newErrors = {...prev};
       delete newErrors[name as string];
       return newErrors;
     })
-  };
+  } 
 
   const handleSubmit:THandleSubmit<T> = ()=>{
-    console.log('data = ', data);
+    //console.log('data = ', data);
     if(joiShema){
       const tempRes = joiShema.validate(data, {abortEarly: false});
       let res:TReturn<T> = {
         values: tempRes.value
       };
-      console.log('res = ', tempRes);
+      //console.log('res = ', tempRes);
       if(tempRes.error){
         const errors:TAppValidateError = {};
         tempRes.error.details.forEach(d=>{
@@ -84,6 +92,8 @@ const useSimpleForm = <T extends {}>({state, joiShema, yupShema}:{
     data,
     errors,
     onChange,
+    clearError,
+    setErrors,
     handleSubmit
   };
 }

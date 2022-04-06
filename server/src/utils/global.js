@@ -24,9 +24,16 @@ const pathDB = path.normalize(path.join(__dirname, '../../db'));
 const pathTables = path.normalize(path.join(__dirname, '../../tables'));
 const pathData = path.normalize(path.join(__dirname, '../../data'));
 
+const upDate = (data)=>{
+  data.version = Number(data.version) + 1;
+  data.changeAt = Date.now();
+  return data;
+}
+
 module.exports = {
   createId,
   pathDB,
   pathTables,
-  pathData
+  pathData,
+  upDate
 }

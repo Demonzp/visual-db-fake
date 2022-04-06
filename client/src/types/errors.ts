@@ -1,4 +1,5 @@
 export interface ICustomError {
+  errorName: ETypeCustomErrors,
   message: string,
 }
 
@@ -8,3 +9,8 @@ export interface ICustomValidationError{
 }
 
 export type TAppValidateError = {[name:string]:{message:string}};
+
+export enum ETypeCustomErrors {
+  VALID_ERROR = 'ValidError',
+  CUSTOM_ERROR = 'CustomError'
+}

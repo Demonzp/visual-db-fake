@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLinkClickHandler, NavLink, NavLinkProps, useLocation } from 'react-router-dom';
+import { useLinkClickHandler, NavLink, NavLinkProps, useLocation, useHref } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { setQuestion } from '../../store/slices/sliceTableStructure';
 
@@ -11,6 +11,7 @@ const CustomLink = React.forwardRef<HTMLAnchorElement, NavLinkProps>(
     const {isSave} = useAppSelector(state=>state.tableStructure);
     const dispatch = useAppDispatch();
     const location = useLocation();
+    const href = useHref(to);
 
     const handleClick = useLinkClickHandler(to, {
       replace,
@@ -23,7 +24,8 @@ const CustomLink = React.forwardRef<HTMLAnchorElement, NavLinkProps>(
       if(isSave){
         handleClick(e);
       }else{
-        location.state = {from:{pathname:to}};
+        console.log(to);
+        location.state = {from:{pathname:href}};
         dispatch(setQuestion(true));
       }
       //console.log('tytyt!!!!!');

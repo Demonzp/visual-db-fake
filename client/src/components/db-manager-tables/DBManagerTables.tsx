@@ -10,6 +10,9 @@ const DbManagerTables = () => {
         <thead>
           <tr>
             <th>TABLE</th>
+            <th>CREATE_AT</th>
+            <th>CHANGE_AT</th>
+            <th>VERSION</th>
             <th>ACTIONS</th>
             <th>ROWS</th>
           </tr>

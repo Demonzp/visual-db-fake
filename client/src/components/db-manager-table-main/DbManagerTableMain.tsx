@@ -41,8 +41,8 @@ const DbManagerTableMain = () => {
     toggle();
     dispatch(clearState());
     const path = (location.state as {from:{pathname:string}}).from.pathname;
-    //console.log('path = ', path);
-    navigate(path);
+    console.log('path = ', path);
+    navigate(path, { replace: true });
   };
 
   return (

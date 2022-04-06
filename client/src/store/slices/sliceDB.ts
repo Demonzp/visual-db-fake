@@ -1,7 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { ICustomError } from '../../types/errors';
-import { changeTableFieldType, createDBTable, getDBTables } from '../actions/db';
+import { createDBTable, getDBTables } from '../actions/db';
 import { getDbList } from '../actions/dbList';
+import { changeFields } from '../actions/tableStructure';
 
 export enum EFielTypes {
   INT = 'int',
@@ -11,7 +12,7 @@ export enum EFielTypes {
 
 export enum EFieldIndex {
   NONE = 'none',
-  PRIMERY = 'prymery',
+  PRIMERY = 'primery',
   UNIQUE = 'unique',
   INDEX = 'index'
 }
@@ -27,6 +28,7 @@ export enum EFieldKeys {
   VALUE_OR_LENGTH = 'valueOrLenght',
   DEFAULT_VALUE = 'defaultValue',
   AUTO_INCREMENT = 'autoIncrement',
+  ALLOW_NULL = 'allowNull',
   INDEX = 'index'
 }
 
@@ -36,14 +38,17 @@ export interface IField {
   [EFieldKeys.VALUE_OR_LENGTH]: string;
   [EFieldKeys.DEFAULT_VALUE]: string | number | null | boolean;
   [EFieldKeys.AUTO_INCREMENT]: boolean;
+  [EFieldKeys.ALLOW_NULL]: boolean;
   [EFieldKeys.INDEX]: EFieldIndex;
 }
 
-export interface ITable {
-  name: string;
+export interface ITable{
   fields: IField[];
+  name: string;
+  createAt: number;
+  changeAt: number;
   version: number;
-  rows: number;
+  rows: number
 }
 
 export interface IDB {
@@ -86,15 +91,6 @@ const sliceDB = createSlice({
       };
     });
 
-    builder.addCase(changeTableFieldType.fulfilled, (state, { payload }) => {
-      state.tables = state.tables.map(t => {
-        if (t.name === payload.name) {
-          return payload;
-        }
-        return t;
-      });
-    });
-
     builder.addCase(getDBTables.pending, (state) => {
       state.isLoading = true;
     });
@@ -129,9 +125,17 @@ const sliceDB = createSlice({
     });
 
     builder.addCase(createDBTable.rejected, (state) => {
-      //const payload = action.payload as ICustomError;
-      //state.errors.push(payload);
       state.isLoading = false;
+    });
+
+    builder.addCase(changeFields.fulfilled, (state, { payload }) => {
+      state.dbInfo = payload.db;
+      state.tables = state.tables.map(t=>{
+        if(t.name===payload.table.name){
+          return payload.table;
+        }
+        return t;
+      });
     });
   }
 });

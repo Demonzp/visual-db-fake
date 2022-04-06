@@ -17,6 +17,8 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { createDBTable } from '../../store/actions/db';
 import { ICustomValidationError } from '../../types/errors';
 import CustomValidationError from '../../utils/customValidationError';
+import { ETableTab } from '../../App';
+import BtnLink from '../btn-link';
 
 interface IFormInputs {
   nameTable: string
@@ -45,8 +47,11 @@ const LeftPanel = () => {
     //console.log('data = ', data);
     dispatch(createDBTable(data.nameTable))
       .unwrap()
-      .then(()=>{
-        console.log('then');
+      .then((data)=>{
+        //console.log('then = ', data);
+        setNameTable('');
+        toggle();
+        navigate(`${data.db.id}/${data.table.name}/${ETableTab.STRUCTURE}`);
       })
       .catch((error)=>{
         if(error.field){
@@ -92,7 +97,8 @@ const LeftPanel = () => {
             </ModalCard>
           </ModalWin>
           <div className={styles.head}>
-            <label>{id}</label>
+            <BtnLink to={id}>{id}</BtnLink>
+            {/* <label>{id}</label> */}
           </div>
           <button onClick={toggle}>create table</button>
           <br></br>
