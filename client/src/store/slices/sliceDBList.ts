@@ -27,6 +27,7 @@ const sliceDBList = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(getDbList.pending, (state) => {
+      state.errors = [];
       state.isLoading = true;
     });
 
@@ -40,20 +41,22 @@ const sliceDBList = createSlice({
       //console.log('payload = ', action.payload);
       const payload = action.payload as ICustomError;
       if(payload.message === 'no any DataBases'){
-        console.log('can Create Db!');
+        //console.log('can Create Db!');
       }else{
+        //console.log('error = ', payload);
         state.errors.push(payload);
       }
       state.isLoading = false;
     });
 
     builder.addCase(createDb.pending, (state) => {
+      state.errors = [];
       state.isLoading = true;
     });
 
     builder.addCase(createDb.fulfilled, (state, { payload }) => {
       state.dbList.push(payload);
-      console.log('payload = ', payload);
+      //console.log('payload = ', payload);
       state.isLoading = false;
     });
 

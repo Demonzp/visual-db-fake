@@ -3,6 +3,7 @@ import DbManagerMain from './components/db-manager-main';
 import DbManagerTableMain from './components/db-manager-table-main';
 import DbManagerTableTabs from './components/db-manager-table-tabs';
 import DbManagerTables from './components/db-manager-tables';
+import DbManagerTablesMain from './components/db-manager-tables-main';
 import NavHead from './components/nav-head';
 import UnSave from './middelwares/UnSave';
 import DbManager from './pages/db-manager';
@@ -40,7 +41,7 @@ const App = () => {
           element={<DbManager />}
         >
           <Route index element={<DbManagerMain />} />
-          <Route path={`:${EUrlParamsDbManager.dbId}`} >
+          <Route path={`:${EUrlParamsDbManager.dbId}`} element={<DbManagerTablesMain />}>
             <Route index element={<DbManagerTables />} />
             <Route path={`:${EUrlParamsDbManager.tableName}`} element={<DbManagerTableMain />}>
               <Route path={`:${EUrlParamsDbManager.tableTab}`} element={<DbManagerTableTabs />}/>

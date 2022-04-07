@@ -2,11 +2,14 @@
   padding-top: 10px;
   display: flex;
   max-width: 600;
+  min-width: 200px;
   height: 100%;
   background-color: antiquewhite;
   flex-flow: column;
 }
 
 .head{
+  display: flex;
+  justify-content: space-around;
   margin-bottom: 10px;
 }

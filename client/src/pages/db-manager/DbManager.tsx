@@ -1,8 +1,7 @@
-import { Fragment, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { EUrlParamsDbManager } from '../../App';
-import DbManagerMain from '../../components/db-manager-main';
-import LeftPanel from '../../components/left-panel';
+import CompError from '../../components/comp-error';
 import { getDBTables } from '../../store/actions/db';
 import { getDbList } from '../../store/actions/dbList';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
@@ -31,14 +30,14 @@ const DbManager = () => {
   return (
     <div className={styles.cont}>
       {!isLoading ?
-        <Fragment>
-          <LeftPanel />
-          <div>
-            <Outlet />
-          </div>
-        </Fragment>
-        :
-        <div>Loading...</div>
+          errors.length<=0?
+              <div>
+                <Outlet />
+              </div>
+            :
+            <CompError errors={errors}/>
+          :
+          <div>Loading...</div>
       }
 
     </div>

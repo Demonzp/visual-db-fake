@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { Outlet, useHref, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ETableTab, TUrlParamsDbManager } from '../../App';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { clearState, setQuestion } from '../../store/slices/sliceTableStructure';
+import ComponentSpiner from '../component-spiner';
 import CustomTabs from '../custom-tabs';
 import ModalCard from '../modal-card';
 import ModalCardActions from '../modal-card-actions/ModalCardActions';
@@ -68,8 +69,16 @@ const DbManagerTableMain = () => {
           </ModalCardActions>
         </ModalCard>
       </ModalWin>
-      <CustomTabs tabs={[ETableTab.MANAGER, ETableTab.STRUCTURE]} />
-      <Outlet />
+      {
+        isLoading?
+          <ComponentSpiner />
+          :
+          <Fragment>
+            <CustomTabs tabs={[ETableTab.MANAGER, ETableTab.STRUCTURE]} />
+            <Outlet />
+          </Fragment>
+      }
+      
     </div>
   )
 };

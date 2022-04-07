@@ -44,7 +44,7 @@ const TableStructure = () => {
   useEffect(() => {
     if (table) {
       if (table.fields.length === 0 && isSave) {
-        dispatch(addField(createField()));
+        dispatch(setFields([createField()]));
       } else if (isSave) {
         dispatch(setFields(table.fields.map(f => {
           return {

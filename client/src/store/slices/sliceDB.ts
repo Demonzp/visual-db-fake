@@ -42,7 +42,7 @@ export interface IField {
   [EFieldKeys.INDEX]: EFieldIndex;
 }
 
-export interface ITable{
+export interface ITable {
   fields: IField[];
   name: string;
   createAt: number;
@@ -63,6 +63,7 @@ export interface IDBState {
   dbInfo: IDB;
   tables: ITable[];
   isLoading: boolean;
+  errors: ICustomError[];
 }
 
 const initialState: IDBState = {
@@ -74,6 +75,7 @@ const initialState: IDBState = {
     version: 0,
   },
   tables: [],
+  errors: [],
   isLoading: true
 };
 
@@ -92,6 +94,7 @@ const sliceDB = createSlice({
     });
 
     builder.addCase(getDBTables.pending, (state) => {
+      state.errors = [];
       state.isLoading = true;
     });
 
@@ -105,9 +108,10 @@ const sliceDB = createSlice({
       console.log('get getDBTables');
     });
 
-    builder.addCase(getDBTables.rejected, (state) => {
+    builder.addCase(getDBTables.rejected, (state, { payload }) => {
+
       //const payload = action.payload as ICustomError;
-      //state.errors.push(payload);
+      state.errors.push(payload as ICustomError);
       state.isLoading = false;
     });
 
@@ -131,8 +135,8 @@ const sliceDB = createSlice({
 
     builder.addCase(changeFields.fulfilled, (state, { payload }) => {
       state.dbInfo = payload.db;
-      state.tables = state.tables.map(t=>{
-        if(t.name===payload.table.name){
+      state.tables = state.tables.map(t => {
+        if (t.name === payload.table.name) {
           return payload.table;
         }
         return t;

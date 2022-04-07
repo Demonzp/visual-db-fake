@@ -103,6 +103,10 @@ const getDb = async(req, res) =>{
       tables
     });
   } catch (error) {
+    if(error.message.indexOf('ENOENT: no such file or directory, open')>=0){
+      res.status(404).json({message: `no such DataBase "${req.query.id}"`});
+      return;
+    }
     console.log('error = ', error.message);
     res.status(400).json({ message: error.message });
   }
