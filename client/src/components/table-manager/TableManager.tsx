@@ -8,6 +8,7 @@ import { TObjAny } from '../../types/global';
 import ComponentSpiner from '../component-spiner';
 import CustomCheckbox from '../custom-checkbox';
 import CustomInput from '../custom-input';
+import CustomInputDate from '../custom-input-date';
 import ModalCard from '../modal-card';
 import ModalCardActions from '../modal-card-actions/ModalCardActions';
 import ModalWin from '../modal-win';
@@ -71,7 +72,15 @@ const TableManager = () => {
           onChange={() => { }}
         />
         break;
-
+      case EFielTypes.DATE:
+        el = <CustomInputDate
+          key={field.name}
+          name={field.name}
+          label={field.name}
+          error={errorsValid}
+          onChange={(value) => setFormData(prev => { return { ...prev, [field.name]: value } })}
+        />
+        break;
       default:
         el = null;
         break;
@@ -81,7 +90,7 @@ const TableManager = () => {
   };
 
   const submitHandle = ()=>{
-    //console.log('data = ', formData);
+    console.log('data = ', formData);
 
     if(!table){
       return;
@@ -90,7 +99,7 @@ const TableManager = () => {
     dispatch(addTableRow({
       tableName: table.name,
       data: formData
-    })).then(()=>toggle());
+    })).unwrap().then(()=>toggle());
   };
 
   // useEffect(()=>{
