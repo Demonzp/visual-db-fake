@@ -1,4 +1,5 @@
 import { IStructureField } from "../store/slices/sliceTableStructure";
+import { TObjAny } from "./global";
 
 export type TReqCreateTable = {
   nameTable: string;
@@ -10,6 +11,18 @@ export type TReqChangeTable = {
     tableName: string,
     v: number
   };
-  fields: IStructureField [];
+  fields: IStructureField[];
   dbId: string;
+}
+
+export type TReqGetTable = {
+  dbId: string;
+  tableName: string;
+  page?: number;
+}
+
+export type TReqAddRow = {
+  dbId: string;
+  tableName: string;
+  data: TObjAny;
 }

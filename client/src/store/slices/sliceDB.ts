@@ -2,12 +2,14 @@ import { createSlice } from '@reduxjs/toolkit';
 import { ICustomError } from '../../types/errors';
 import { createDBTable, getDBTables } from '../actions/db';
 import { getDbList } from '../actions/dbList';
+import { getTableData } from '../actions/tableManager';
 import { changeFields } from '../actions/tableStructure';
 
 export enum EFielTypes {
   INT = 'int',
   STRING = 'str',
-  DATE = 'date'
+  DATE = 'date',
+  BOOLEAN = 'boolean'
 }
 
 export enum EFieldIndex {
@@ -86,6 +88,15 @@ const sliceDB = createSlice({
 
   },
   extraReducers: (builder) => {
+
+    builder.addCase(getTableData.fulfilled, (state, { payload }) => {
+      state.tables = state.tables.map(t=>{
+        if(t.name===payload.table.name){
+          return payload.table;
+        }
+        return t;
+      });
+    });
 
     builder.addCase(getDbList.pending, (state) => {
       state.dbInfo = {

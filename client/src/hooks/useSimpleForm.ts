@@ -84,6 +84,8 @@ const useSimpleForm = <T extends {}>({state, joiShema, yupShema}:{
         return error;
       }
       
+    }else{
+      return {values: data};
     }
     
   };
