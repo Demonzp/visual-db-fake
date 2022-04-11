@@ -21,3 +21,5 @@ export type TResDataAddRow = {
   table: ITable,
   data: TObjAny
 }
+
+export type TResClearTable = {succes: string};

@@ -1,5 +1,5 @@
 const path = require('path');
-const { writeFile, mkdir } = require('fs/promises');
+const { writeFile, mkdir, unlink } = require('fs/promises');
 const { isFileExist, readJson } = require('../utils/fsUtils');
 const { pathTables, pathDB, pathData, upDate } = require('../utils/global');
 
@@ -110,7 +110,7 @@ const isUniqueFields = (fields) => {
     const findFields = fields.filter(f => f.name === field.name);
     if (findFields.length > 1) {
       //throw new Error(field.id);
-      return{rowId: field.id, field: 'name', message: `field "name" must be unique`}
+      return { rowId: field.id, field: 'name', message: `field "name" must be unique` }
     }
   }
   return true;
@@ -131,17 +131,10 @@ const changeTable = async (req, res) => {
 
     const fields = req.body.fields;
     const isUniqueFieldsRes = isUniqueFields(fields);
-    if(typeof isUniqueFieldsRes==='object'){
+    if (typeof isUniqueFieldsRes === 'object') {
       res.status(412).json({ errors: [isUniqueFieldsRes] });
       return;
     }
-
-    // try {
-    //   isUniqueFields(fields)
-    // } catch (error) {
-    //   res.status(412).json({ errors: [{ field: error.message, message: `field "name" must be unique` }] });
-    //   return;
-    // }
 
     isPrimeryOne(fields);
 
@@ -177,20 +170,20 @@ const changeTable = async (req, res) => {
     for (let i = 0; i < fields.length; i++) {
       const field = fields[i];
 
-      if(field.autoIncrement && field.type!=='int'){
-        res.status(412).json({ errors: [{ rowId: field.id,  field: 'type', message: `field "type" must be type of int` }] });
+      if (field.autoIncrement && field.type !== 'int') {
+        res.status(412).json({ errors: [{ rowId: field.id, field: 'type', message: `field "type" must be type of int` }] });
         return;
       }
 
       const idx = prevTable.fields.findIndex(f => f.name === field.name);
       const tF = { ...field };
       delete tF.id;
-      if(field.index==='primery'){
+      if (field.index === 'primery') {
         field.allowNull = false;
         keyField = field.name;
       }
 
-      if(field.index==='unique' && !keyField){
+      if (field.index === 'unique' && !keyField) {
         field.allowNull = false;
         keyField = field.name;
       }
@@ -202,6 +195,12 @@ const changeTable = async (req, res) => {
 
         prevTable.fields[idx] = tF;
       } else {
+
+        if (field.autoIncrement && prevTable.rows > 0) {
+          res.status(412).json({ errors: [{ rowId: field.id, field: 'autoIncrement', message: `cant add Auto Increment because the table is not empty` }] });
+          return;
+        }
+
         prevTable.fields.push(tF);
       }
     }
@@ -267,9 +266,15 @@ const validateTableData = (tableInfo, data) => {
     if (data.hasOwnProperty(field.name)) {
       switch (field.type) {
         case 'int':
+          if(field.autoIncrement){
+            const index = Number(tableInfo.index) + 1;
+            validData[field.name] = index;
+            tableInfo.index = index;
+            break;
+          }
           const num = Number.parseInt(data[field.name]);
           if (Number.isNaN(num)) {
-            errors[field.name] = {message: `field "${field.name}" must by number`};
+            errors[field.name] = { message: `field "${field.name}" must by number` };
             break;
           }
           validData[field.name] = num;
@@ -277,22 +282,22 @@ const validateTableData = (tableInfo, data) => {
         case 'str':
           const str = String(data[field.name]);
           if (typeof str !== 'string') {
-            errors[field.name] = {message:`field "${field.name}" must by string`};
+            errors[field.name] = { message: `field "${field.name}" must by string` };
             break;
           }
 
-          if(str.length<=0 && !field.allowNull){
-            if(String(field.defaultValue).length<=0){
-              errors[field.name] = {message:`field "${field.name}" is require`};
+          if (str.length <= 0 && !field.allowNull) {
+            if (String(field.defaultValue).length <= 0) {
+              errors[field.name] = { message: `field "${field.name}" is require` };
               break;
-            }else{
+            } else {
               validData[field.name] = field.defaultValue;
               break;
             }
           }
 
-          if(str.length>Number(field.valueOrLenght)){
-            errors[field.name] = {message:`field "${field.name}" should be less than ${field.valueOrLenght}`};
+          if (str.length > Number(field.valueOrLenght)) {
+            errors[field.name] = { message: `field "${field.name}" should be less than ${field.valueOrLenght}` };
           }
 
           validData[field.name] = data[field.name];
@@ -300,7 +305,7 @@ const validateTableData = (tableInfo, data) => {
         case 'date':
           const date = new Date(data[field.name]);
           if (date == 'Invalid Date') {
-            errors[field.name] = {message:`field "${field.name}" must by Date`};
+            errors[field.name] = { message: `field "${field.name}" must by Date` };
             break;
           }
           validData[field.name] = Date.parse(data[field.name]);
@@ -308,7 +313,7 @@ const validateTableData = (tableInfo, data) => {
         case 'boolean':
           const bool = data[field.name];
           if (typeof bool !== 'boolean') {
-            errors[field.name] = {message:`field "${field.name}" must by Boolean`};
+            errors[field.name] = { message: `field "${field.name}" must by Boolean` };
           }
           validData[field.name] = Boolean(data[field.name]);
           break;
@@ -316,15 +321,15 @@ const validateTableData = (tableInfo, data) => {
           break;
       }
     } else if (!field.allowNull) {
-      if(field.autoIncrement){
-        const index = Number(tableInfo.index)+1;
+      if (field.autoIncrement) {
+        const index = Number(tableInfo.index) + 1;
         validData[field.name] = index;
         tableInfo.index = index;
-      }else{
+      } else {
         if (String(field.defaultValue).length > 0) {
           validData[field.name] = field.defaultValue;
         } else {
-          errors[field.name] = {message:`field ${field.name} is requer`};
+          errors[field.name] = { message: `field ${field.name} is requer` };
         }
       }
     }
@@ -348,15 +353,15 @@ const addRowToTable = async (req, res) => {
     }
 
     const validatedData = validateTableData(tableInfo, data);
-    if(Object.entries(validatedData.errors).length>0){
-      res.status(412).json({ errors: [validatedData.errors]});
+    if (Object.entries(validatedData.errors).length > 0) {
+      res.status(412).json({ errors: [validatedData.errors] });
       return;
     }
 
     const dataFileName = dbId + '_' + tableName + '.json';
     const dataFile = path.join(pathData, dataFileName);
     let tableData = [];
-    if(tableInfo.rows>0){
+    if (tableInfo.rows > 0) {
       tableData = await readJson(dataFile);
     }
     tableData.push(validatedData.validData);
@@ -365,24 +370,24 @@ const addRowToTable = async (req, res) => {
 
     await writeFile(dataFile, JSON.stringify(tableData));
 
-    tableInfo.rows = Number(tableInfo.rows)+1;
+    tableInfo.rows = Number(tableInfo.rows) + 1;
 
     await writeFile(tableFile, JSON.stringify(tableInfo));
-     
+
     //console.log('data = ', validatedData.validData);
     //console.log('tableInfo = ', tableInfo);
-    res.json({data: validatedData.validData, table: tableInfo});
+    res.json({ data: validatedData.validData, table: tableInfo });
   } catch (error) {
     console.log('error = ', error.message);
     res.status(400).json({ message: error.message });
   }
 };
 
-const validatedDataToChange = ()=>{
+const validatedDataToChange = () => {
 
 };
 
-const changeRowTable = async (req, res)=>{
+const changeRowTable = async (req, res) => {
   try {
     const dbId = req.body.dbId;
     const tableName = req.body.tableName;
@@ -392,13 +397,13 @@ const changeRowTable = async (req, res)=>{
     const tableFile = path.join(pathTables, tableFileName);
     const tableInfo = await readJson(tableFile);
 
-    let idxField = tableInfo.fields.find(f=>f.index==='primery');
+    let idxField = tableInfo.fields.find(f => f.index === 'primery');
 
-    if(!idxField){
-      idxField = tableInfo.fields.find(f=>f.index==='unique');
+    if (!idxField) {
+      idxField = tableInfo.fields.find(f => f.index === 'unique');
     }
 
-    if(!idxField){
+    if (!idxField) {
       throw new Error('one of field in row must by unique')
     }
 
@@ -411,9 +416,37 @@ const changeRowTable = async (req, res)=>{
   }
 };
 
+const clearTable = async (req, res) => {
+  try {
+    const dbId = req.query.dbId;
+    const tableName = req.query.tableName;
+
+    const tableFileName = dbId + '_' + tableName + '.json';
+    const tableFile = path.join(pathTables, tableFileName);
+    const tableInfo = await readJson(tableFile);
+
+    if (tableInfo.rows <= 0) {
+      throw new Error(`table "${tableInfo.name}" is no has any rows`);
+    }
+
+    const dataFileName = dbId + '_' + tableName + '.json';
+    const dataFile = path.join(pathData, dataFileName);
+    await unlink(dataFile);
+
+    tableInfo.rows = 0;
+    await writeFile(tableFile, JSON.stringify(tableInfo));
+
+    res.json({ succes: `table "${tableInfo.name}" was successfully cleared.` });
+  } catch (error) {
+    console.log('error = ', error.message);
+    res.status(400).json({ message: error.message });
+  }
+}
+
 module.exports = {
   createTable,
   changeTable,
   getTableData,
-  addRowToTable
+  addRowToTable,
+  clearTable
 }

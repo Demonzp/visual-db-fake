@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ETableTab, TUrlParamsDbManager } from '../../App';
-import { addTableRow, getTableData } from '../../store/actions/tableManager';
+import { addTableRow, clearTable, getTableData } from '../../store/actions/tableManager';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { EFielTypes, IField, ITable } from '../../store/slices/sliceDB';
 import { TObjAny } from '../../types/global';
@@ -42,8 +42,16 @@ const TableManager = () => {
       })).then(() => setIsLoaded(true));
     }
   }, [table, isLoaded]);
-
+  
   const [formData, setFormData] = useState<TObjAny>({});
+
+  useEffect(()=>{
+    const obj:TObjAny = {};
+    fieldsKye.forEach(f=>{
+      obj[f] = '';
+    });
+    setFormData(obj);
+  }, [fieldsKye]);
 
   const getInputElement: (field: IField) => JSX.Element | null = (field) => {
     let el;
@@ -60,6 +68,7 @@ const TableManager = () => {
           name={field.name}
           label={field.name}
           error={errorsValid}
+          value={formData[field.name]}
           onChange={(value) => setFormData(prev => { return { ...prev, [field.name]: value } })}
         />
         break;
@@ -69,6 +78,7 @@ const TableManager = () => {
           key={field.name}
           name={field.name}
           label={field.name}
+          value={formData[field.name]}
           onChange={(value) => setFormData(prev => { return { ...prev, [field.name]: value } })}
         />
         break;
@@ -78,6 +88,7 @@ const TableManager = () => {
           name={field.name}
           label={field.name}
           error={errorsValid}
+          value={formData[field.name]}
           onChange={(value) => setFormData(prev => { return { ...prev, [field.name]: value } })}
         />
         break;
@@ -110,15 +121,21 @@ const TableManager = () => {
     <div>
       <ModalWin show={show} onHide={toggle}>
         <ModalCard title='add Row'>
-          <div>
-            {table?.fields.map(f => {
-              return getInputElement(f);
-            })}
-          </div>
-          <ModalCardActions>
-            <button onClick={submitHandle}>Continue</button>
-            <button onClick={toggle}>Cancel</button>
-          </ModalCardActions>
+          {isLoading?
+            <ComponentSpiner />
+            :
+            <Fragment>
+              <div>
+                {table?.fields.map(f => {
+                  return getInputElement(f);
+                })}
+              </div>
+              <ModalCardActions>
+                <button onClick={submitHandle}>Continue</button>
+                <button onClick={toggle}>Cancel</button>
+              </ModalCardActions>
+            </Fragment>
+          }
         </ModalCard>
       </ModalWin>
       {
@@ -129,6 +146,14 @@ const TableManager = () => {
           </Fragment>
           :
           <Fragment>
+            {
+              !table?.keyField?
+              <div>
+                <p>table '{table?.name}' has no unique field, operation of change or delite rows inposible</p>
+              </div>
+              :
+              null
+            }
             {isLoading ?
               <ComponentSpiner />
               :
@@ -141,7 +166,12 @@ const TableManager = () => {
                           return <th key={fK}>{fK.toUpperCase()}</th>
                         })
                       }
-                      <th>ACTIONS</th>
+                      {
+                        table?.keyField?
+                        <th>ACTIONS</th>
+                        :
+                        null
+                      }
                     </tr>
                   </thead>
                   <tbody>
@@ -151,10 +181,14 @@ const TableManager = () => {
                             return(
                             <tr key={table.keyField?row[table.keyField]:i}>
                               {
-                                Object.entries(row).map(([key, val])=>{
-                                  return (
-                                    <td key={key}>{val}</td>
-                                  );
+                                fieldsKye.map(key=>{
+                                  if(row.hasOwnProperty(key)){
+                                    return(
+                                      <td key={key}>{row[key]}</td>
+                                    );
+                                  }else{
+                                    return <td key={key}></td>;
+                                  }
                                 })
                               }
                             </tr>
@@ -167,7 +201,7 @@ const TableManager = () => {
                 </table>
                 <div className={stylesS['cont-action']}>
                   <button onClick={toggle}>Add Row</button>
-                  <button onClick={() => { }}>Clear Table</button>
+                  <button onClick={()=>table?dispatch(clearTable({tableName:table.name})):null}>Clear Table</button>
                 </div>
               </div>
             }

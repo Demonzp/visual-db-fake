@@ -8,6 +8,7 @@ import { EFieldIndex, EFielTypes, IField, ITable } from '../../store/slices/slic
 import { addField, changeField, delField, IStructureField, setFields, TChangeField } from '../../store/slices/sliceTableStructure';
 import { createId } from '../../utils/global';
 import CompError from '../comp-error';
+import ComponentSpiner from '../component-spiner';
 import DbManagerTableItem from '../db-manager-table-item';
 
 import styles from './table-structure.module.css';
@@ -29,7 +30,7 @@ const TableStructure = () => {
   const { tables } = useAppSelector(state => state.db);
   const { tableName, dbId } = useParams<TUrlParamsDbManager>();
   const [table, setTable] = useState<ITable | undefined>();
-  const { fields, isSave, errors } = useAppSelector(state => state.tableStructure);
+  const { fields, isSave, errors, isLoading } = useAppSelector(state => state.tableStructure);
   const [isSubmit, setIsSubmit] = useState(false);
   //const [allData, setAllData] = useState<IField[]>([]);
   const allData: IStructureField[] = [];
@@ -85,6 +86,9 @@ const TableStructure = () => {
   return (
     <div>
       {table ?
+        isLoading?
+        <ComponentSpiner />
+        :
         <Fragment>
           <div>
             <CompError errors={errors}/>

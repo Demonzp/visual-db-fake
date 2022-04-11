@@ -26,3 +26,8 @@ export type TReqAddRow = {
   tableName: string;
   data: TObjAny;
 }
+
+export type TReqClearTable = {
+  dbId: string;
+  tableName: string;
+}
