@@ -441,6 +441,53 @@ const clearTable = async (req, res) => {
     console.log('error = ', error.message);
     res.status(400).json({ message: error.message });
   }
+};
+
+const delTableRow = async(req, res)=>{
+  try {
+    const dbId = req.query.dbId;
+    const tableName = req.query.tableName;
+    const rowId = req.query.rowId;
+
+    const tableFileName = dbId + '_' + tableName + '.json';
+    const tableFile = path.join(pathTables, tableFileName);
+    const tableInfo = await readJson(tableFile);
+
+    if (tableInfo.rows <= 0) {
+      throw new Error(`table "${tableInfo.name}" is no has any rows`);
+    }
+
+    const keyField = tableInfo.keyField;
+    if(!keyField){
+      throw new Error(`table "${tableInfo.name}" is no has any unique field`);
+    }
+
+    const dataFileName = dbId + '_' + tableName + '.json';
+    const dataFile = path.join(pathData, dataFileName);
+    let data =  await readJson(dataFile);
+
+    const idx = data.findIndex(row=>String(row[keyField])===String(rowId));
+
+    if(idx<0){
+      throw new Error(`in table "${tableInfo.name}" not found this row`);
+    }
+
+    data = [
+      ...data.slice(0, idx),
+      ...data.slice(idx+1)
+    ];
+
+    await writeFile(dataFile, JSON.stringify(data));
+
+    tableInfo.rows = Number(tableInfo.rows) - 1;
+
+    await writeFile(tableFile, JSON.stringify(tableInfo));
+
+    res.json({ succes: `successfully delete row in table "${tableInfo.name}".` });
+  } catch (error) {
+    console.log('error = ', error.message);
+    res.status(400).json({ message: error.message });
+  }
 }
 
 module.exports = {
@@ -448,5 +495,6 @@ module.exports = {
   changeTable,
   getTableData,
   addRowToTable,
-  clearTable
+  clearTable,
+  delTableRow
 }

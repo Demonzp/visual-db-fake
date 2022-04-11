@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { ETypeCustomErrors, ICustomError, ICustomValidationError, TAppValidateError } from '../../types/errors';
 import { TObjAny } from '../../types/global';
 import CustomValidationError from '../../utils/customValidationError';
-import { addTableRow, clearTable, getTableData } from '../actions/tableManager';
+import { addTableRow, clearTable, delTableRow, getTableData } from '../actions/tableManager';
 
 type TFieldsKye = string[];
 
@@ -87,6 +87,21 @@ const sliceTableManager = createSlice({
     });
 
     builder.addCase(clearTable.rejected, (state, action) => {
+      state.errors = action.payload as ICustomError[];
+      state.isLoading = false;
+    });
+
+    builder.addCase(delTableRow.pending, (state) => {
+      state.errors = [];
+      state.errorsValid = {} as TAppValidateError;
+      state.isLoading = true;
+    });
+
+    builder.addCase(delTableRow.fulfilled, (state) => {
+      state.isLoading = false;
+    });
+
+    builder.addCase(delTableRow.rejected, (state, action) => {
       state.errors = action.payload as ICustomError[];
       state.isLoading = false;
     });

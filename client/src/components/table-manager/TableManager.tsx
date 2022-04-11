@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ETableTab, TUrlParamsDbManager } from '../../App';
-import { addTableRow, clearTable, getTableData } from '../../store/actions/tableManager';
+import { addTableRow, clearTable, delTableRow, getTableData } from '../../store/actions/tableManager';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { EFielTypes, IField, ITable } from '../../store/slices/sliceDB';
 import { TObjAny } from '../../types/global';
@@ -113,6 +113,13 @@ const TableManager = () => {
     })).unwrap().then(()=>toggle());
   };
 
+  const delHandle = (rowId:string)=>{
+    if(!table){
+      return;
+    }
+    dispatch(delTableRow({tableName:table.name, rowId}));
+  };
+
   // useEffect(()=>{
   //   console.log('errorsValid = ', errorsValid);
   // },[errorsValid]);
@@ -190,6 +197,15 @@ const TableManager = () => {
                                     return <td key={key}></td>;
                                   }
                                 })
+                              }
+                              {
+                                table.keyField?
+                                <td>
+                                  <button onClick={()=>{}}>change</button>
+                                  <button onClick={()=>delHandle(row[table.keyField])}>del</button>
+                                </td>
+                                :
+                                null
                               }
                             </tr>
                             );

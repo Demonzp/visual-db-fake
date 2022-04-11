@@ -31,3 +31,9 @@ export type TReqClearTable = {
   dbId: string;
   tableName: string;
 }
+
+export type TReqDelRow = {
+  dbId: string;
+  tableName: string;
+  rowId: string;
+}

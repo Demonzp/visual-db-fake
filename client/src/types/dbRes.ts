@@ -22,4 +22,4 @@ export type TResDataAddRow = {
   data: TObjAny
 }
 
-export type TResClearTable = {succes: string};
+export type TResSuccesText = {succes: string};

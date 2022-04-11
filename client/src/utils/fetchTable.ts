@@ -1,6 +1,6 @@
 import axios, { AxiosError } from 'axios';
-import { TReqAddRow, TReqChangeTable, TReqClearTable, TReqCreateTable, TReqGetTable } from '../types/dbReq';
-import { TResClearTable, TResDataAddRow, TResDataDbCreateTable, TResDataDbTables, TResDataGetTable } from '../types/dbRes';
+import { TReqAddRow, TReqChangeTable, TReqClearTable, TReqCreateTable, TReqDelRow, TReqGetTable } from '../types/dbReq';
+import { TResDataAddRow, TResDataDbCreateTable, TResDataDbTables, TResDataGetTable, TResSuccesText } from '../types/dbRes';
 import { IStructurValidationError } from '../types/errors';
 import { errorHandle } from './errorAxiosHandle';
 
@@ -66,9 +66,22 @@ export const fetchTableAddRow = async (data:TReqAddRow):Promise<TResDataAddRow> 
   }
 };
 
-export const fetchClearTable = async (data:TReqClearTable):Promise<TResClearTable>=>{
+export const fetchClearTable = async (data:TReqClearTable):Promise<TResSuccesText>=>{
   try {
-    const res = await axios.delete<TResClearTable>('/api/db/table/clear', {
+    const res = await axios.delete<TResSuccesText>('/api/db/table/clear', {
+      params:data
+    });
+
+    return res.data;
+  } catch (error) {
+
+    return errorHandle(error as AxiosError);
+  }
+}
+
+export const fetchDelRow = async (data:TReqDelRow):Promise<TResSuccesText>=>{
+  try {
+    const res = await axios.delete<TResSuccesText>('/api/db/table/row', {
       params:data
     });
 
