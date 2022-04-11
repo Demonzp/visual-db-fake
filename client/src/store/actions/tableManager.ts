@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { TResDataAddRow, TResDataGetTable } from '../../types/dbRes';
-import { ETypeCustomErrors, ICustomError } from '../../types/errors';
+import { ETypeCustomErrors, ICustomError, ICustomValidationError } from '../../types/errors';
 import { TObjAny } from '../../types/global';
 import CustomValidationError from '../../utils/customValidationError';
 import { fetchTableAddRow, fetchTableData } from '../../utils/fetchTable';
@@ -43,7 +43,7 @@ export const addTableRow = createAsyncThunk<TResDataAddRow, TAddTableRow, { stat
     } catch (error) {
       const err = error as Error;
       if(err.name===ETypeCustomErrors.VALID_ERROR){
-        return rejectWithValue({ errorName: ETypeCustomErrors.VALID_ERROR, errors: (err as CustomValidationError).errors });
+        return rejectWithValue({ errorName: ETypeCustomErrors.VALID_ERROR, errors: (err as CustomValidationError<ICustomValidationError>).errors });
       }
       return rejectWithValue({errorName: ETypeCustomErrors.CUSTOM_ERROR, message: (error as Error).message });
     }

@@ -50,6 +50,7 @@ export interface ITable {
   createAt: number;
   changeAt: number;
   version: number;
+  keyField: string;
   rows: number
 }
 

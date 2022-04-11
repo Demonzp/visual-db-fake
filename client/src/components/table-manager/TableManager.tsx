@@ -69,7 +69,7 @@ const TableManager = () => {
           key={field.name}
           name={field.name}
           label={field.name}
-          onChange={() => { }}
+          onChange={(value) => setFormData(prev => { return { ...prev, [field.name]: value } })}
         />
         break;
       case EFielTypes.DATE:
@@ -145,20 +145,24 @@ const TableManager = () => {
                     </tr>
                   </thead>
                   <tbody>
-                      {data.map((row, i)=>{
-                        return(
-                        <tr key={i}>
-                          {
-                            Object.entries(row).map(([key, val])=>{
-                              return (
-                                <td key={key}>{val}</td>
-                              );
-                            })
-                          }
-                        </tr>
-                        );
-                        
-                      })}
+                      {
+                        table?
+                          data.map((row, i)=>{
+                            return(
+                            <tr key={table.keyField?row[table.keyField]:i}>
+                              {
+                                Object.entries(row).map(([key, val])=>{
+                                  return (
+                                    <td key={key}>{val}</td>
+                                  );
+                                })
+                              }
+                            </tr>
+                            );
+                          })
+                          :
+                          null
+                      }
                   </tbody>
                 </table>
                 <div className={stylesS['cont-action']}>

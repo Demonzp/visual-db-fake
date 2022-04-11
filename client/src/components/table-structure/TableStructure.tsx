@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { EFieldIndex, EFielTypes, IField, ITable } from '../../store/slices/sliceDB';
 import { addField, changeField, delField, IStructureField, setFields, TChangeField } from '../../store/slices/sliceTableStructure';
 import { createId } from '../../utils/global';
+import CompError from '../comp-error';
 import DbManagerTableItem from '../db-manager-table-item';
 
 import styles from './table-structure.module.css';
@@ -28,7 +29,7 @@ const TableStructure = () => {
   const { tables } = useAppSelector(state => state.db);
   const { tableName, dbId } = useParams<TUrlParamsDbManager>();
   const [table, setTable] = useState<ITable | undefined>();
-  const { fields, isSave } = useAppSelector(state => state.tableStructure);
+  const { fields, isSave, errors } = useAppSelector(state => state.tableStructure);
   const [isSubmit, setIsSubmit] = useState(false);
   //const [allData, setAllData] = useState<IField[]>([]);
   const allData: IStructureField[] = [];
@@ -85,6 +86,9 @@ const TableStructure = () => {
     <div>
       {table ?
         <Fragment>
+          <div>
+            <CompError errors={errors}/>
+          </div>
           <table>
             <thead>
               <tr>

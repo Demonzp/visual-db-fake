@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { ETypeCustomErrors, ICustomError, TAppValidateError } from '../../types/errors';
+import { ETypeCustomErrors, ICustomError, ICustomValidationError, TAppValidateError } from '../../types/errors';
 import { TObjAny } from '../../types/global';
 import CustomValidationError from '../../utils/customValidationError';
 import { addTableRow, getTableData } from '../actions/tableManager';
@@ -60,7 +60,7 @@ const sliceTableManager = createSlice({
     builder.addCase(addTableRow.rejected, (state, action) => {
       
       if((action.payload as ICustomError).errorName===ETypeCustomErrors.VALID_ERROR){
-        const err = (action.payload as CustomValidationError).errors[0];
+        const err = (action.payload as CustomValidationError<ICustomValidationError>).errors[0];
         const parseErr = {} as TAppValidateError;
         for (const [key, val] of Object.entries(err)) {
           parseErr[key] = {message: val.message};

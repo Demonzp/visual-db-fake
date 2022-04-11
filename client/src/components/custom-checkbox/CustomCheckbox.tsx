@@ -16,18 +16,21 @@ const CustomCheckbox: React.FC<Props> = ({name, label, value, onChange, error})=
 
   return(
     <div className={stylesC.cont}>
-      {
-        label ?
-          <label className={stylesC.label}>{label}</label>
-          :
-          null
-      }
+      <div>
+        {
+          label ?
+            <label className={stylesC.label}>{label}</label>
+            :
+            null
+        }
 
-      <input 
-        type='checkbox' 
-        checked={value}
-        onChange={changeHandle} 
-      />
+        <input 
+          type='checkbox' 
+          checked={value}
+          onChange={changeHandle} 
+        />
+      </div>
+      
       {error?
         error[name]?
           <p className={stylesC.error}>{error[name].message}</p>

@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios';
 import { TReqAddRow, TReqChangeTable, TReqCreateTable, TReqGetTable } from '../types/dbReq';
 import { TResDataAddRow, TResDataDbCreateTable, TResDataDbTables, TResDataGetTable } from '../types/dbRes';
-import { TObjAny } from '../types/global';
+import { IStructurValidationError } from '../types/errors';
 import { errorHandle } from './errorAxiosHandle';
 
 export const fetchChangeTable = async (data: TReqChangeTable): Promise<TResDataDbCreateTable> => {
@@ -10,7 +10,7 @@ export const fetchChangeTable = async (data: TReqChangeTable): Promise<TResDataD
 
     return res.data;
   } catch (error) {
-    return errorHandle(error as AxiosError);
+    return errorHandle<IStructurValidationError>(error as AxiosError);
   }
 };
 

@@ -1,7 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { TReqChangeTable } from '../../types/dbReq';
 import { TResDataDbCreateTable } from '../../types/dbRes';
-import { ETypeCustomErrors, ICustomError, ICustomValidationError } from '../../types/errors';
+import { ETypeCustomErrors, ICustomError, IStructurValidationError } from '../../types/errors';
 import CustomValidationError from '../../utils/customValidationError';
 import { fetchChangeTable } from '../../utils/fetchTable';
 import { ITable } from '../slices/sliceDB';
@@ -21,7 +20,7 @@ type TDataChangeFields = {
   fields: IStructureField [];
 }
 
-export const changeFields = createAsyncThunk<IReturnDateChangeTable, TDataChangeFields, { state: RootState, rejectWithValue: ICustomError | ICustomValidationError }>(
+export const changeFields = createAsyncThunk<IReturnDateChangeTable, TDataChangeFields, { state: RootState, rejectWithValue: ICustomError | IStructurValidationError }>(
   'tableStructure/changeFields',
   async (data, {getState, rejectWithValue }) => {
     try {
@@ -50,7 +49,7 @@ export const changeFields = createAsyncThunk<IReturnDateChangeTable, TDataChange
     } catch (error) {
       const err = error as Error;
       if(err.name===ETypeCustomErrors.VALID_ERROR){
-        return rejectWithValue({ errorName: ETypeCustomErrors.VALID_ERROR, errors: (err as CustomValidationError).errors });
+        return rejectWithValue({ errorName: ETypeCustomErrors.VALID_ERROR, errors: (err as CustomValidationError<IStructurValidationError>).errors });
       }
       return rejectWithValue({errorName: ETypeCustomErrors.CUSTOM_ERROR, message: (error as Error).message });
     }

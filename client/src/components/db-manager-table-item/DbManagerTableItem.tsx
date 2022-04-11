@@ -51,13 +51,14 @@ const DbManagerTableItem: React.FC<Props> = ({ i, field, isSubmit, onSubmit, cha
   }, [isSubmit]);
 
   useEffect(()=>{
-    //console.log('errorsValid = ', errorsValid);
-    const idx = errorsValid.findIndex(err=>err.field===i);
+    console.log('errorsValid = ', errorsValid, '|', i);
+    const idx = errorsValid.findIndex(err=>err.rowId===i);
     if(idx>=0){
+      console.log('errorsValid = ', errorsValid[idx]);
       setErrors(prev=>{
         return {
           ...prev,
-          name: {message: errorsValid[idx].message}
+          [errorsValid[idx].field]: {message: errorsValid[idx].message}
         }
       })
     }
@@ -78,6 +79,7 @@ const DbManagerTableItem: React.FC<Props> = ({ i, field, isSubmit, onSubmit, cha
           name={EFieldKeys.TYPE}
           options={getOptionsFromEnum(EFielTypes)}
           selected={data.type}
+          error={errors}
           onChange={(value) => changeHandle({ name: EFieldKeys.TYPE, value })}
         />
       </td>
@@ -110,7 +112,8 @@ const DbManagerTableItem: React.FC<Props> = ({ i, field, isSubmit, onSubmit, cha
           name={EFieldKeys.INDEX}
           options={getOptionsFromEnum(EFieldIndex)}
           selected={data.index}
-          onChange={() => { }}
+          error={errors}
+          onChange={(value) => changeHandle({ name: EFieldKeys.INDEX, value })}
         />
       </td>
       <td>

@@ -48,7 +48,7 @@ const LeftPanel = () => {
         //console.log('then = ', data);
         setNameTable('');
         toggle();
-        navigate(`${data.db.id}/${data.table.name}/${ETableTab.STRUCTURE}`);
+        navigate(`../${data.db.id}/${data.table.name}/${ETableTab.STRUCTURE}`);
       })
       .catch((error) => {
         if (error.field) {

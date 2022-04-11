@@ -8,6 +8,10 @@ export interface ICustomValidationError{
   field: string | number;
 }
 
+export interface IStructurValidationError extends ICustomValidationError{
+  rowId: string;
+}
+
 export type TAppValidateError = {[name:string]:{message:string}};
 
 export enum ETypeCustomErrors {
