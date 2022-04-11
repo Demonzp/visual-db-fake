@@ -117,7 +117,10 @@ const TableManager = () => {
     if(!table){
       return;
     }
-    dispatch(delTableRow({tableName:table.name, rowId}));
+    setIsLoaded(false);
+    dispatch(delTableRow({tableName:table.name, rowId}))
+      .unwrap()
+      .then(()=>setIsLoaded(false));
   };
 
   // useEffect(()=>{

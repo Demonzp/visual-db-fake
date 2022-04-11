@@ -97,8 +97,8 @@ const sliceTableManager = createSlice({
       state.isLoading = true;
     });
 
-    builder.addCase(delTableRow.fulfilled, (state) => {
-      state.isLoading = false;
+    builder.addCase(delTableRow.fulfilled, () => {
+      //state.isLoading = false;
     });
 
     builder.addCase(delTableRow.rejected, (state, action) => {
