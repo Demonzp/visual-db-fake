@@ -25,16 +25,18 @@ export enum EDialects {
 }
 
 export enum EFieldKeys {
+  ID='id',
   NAME = 'name',
   TYPE = 'type',
   VALUE_OR_LENGTH = 'valueOrLenght',
   DEFAULT_VALUE = 'defaultValue',
   AUTO_INCREMENT = 'autoIncrement',
   ALLOW_NULL = 'allowNull',
-  INDEX = 'index'
+  INDEX = 'index',
 }
 
 export interface IField {
+  [EFieldKeys.ID]: string;
   [EFieldKeys.NAME]: string;
   [EFieldKeys.TYPE]: EFielTypes;
   [EFieldKeys.VALUE_OR_LENGTH]: string;

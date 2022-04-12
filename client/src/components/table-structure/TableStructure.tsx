@@ -50,8 +50,7 @@ const TableStructure = () => {
       } else if (isSave) {
         dispatch(setFields(table.fields.map(f => {
           return {
-            ...f,
-            id: createId(8)
+            ...f
           }
         })));
       }
@@ -60,7 +59,9 @@ const TableStructure = () => {
 
   const onSubmit = (data: TReturn<IStructureField>) => {
     numCallback++;
+    console.log('data = ', data);
     if(!data.errors){
+      console.log('errors = ', data.errors);
       allData.push(data.values);
     }
     if (numCallback >= fields.length) {
@@ -81,6 +82,11 @@ const TableStructure = () => {
   const changeHandle = (data: TChangeField) => {
     //console.log('data = ', data);
     dispatch(changeField(data));
+  }
+
+  const delHandle = (id: string)=>{
+    console.log('id = ', id);
+    dispatch(delField(id));
   }
 
   return (
@@ -115,7 +121,7 @@ const TableStructure = () => {
                   change={changeHandle}
                   isSubmit={isSubmit}
                   onSubmit={onSubmit}
-                  onDel={(id) => dispatch(delField(id))}
+                  onDel={delHandle}
                 />
               })}
             </tbody>
