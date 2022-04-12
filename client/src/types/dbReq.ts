@@ -37,3 +37,9 @@ export type TReqDelRow = {
   tableName: string;
   rowId: string;
 }
+
+export type TReqRenameTable = {
+  dbId: string;
+  nameTable: string;
+  oldNameTable: string;
+}

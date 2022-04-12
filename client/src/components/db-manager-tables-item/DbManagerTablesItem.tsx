@@ -5,10 +5,15 @@ import BtnLink from '../btn-link';
 
 type Props = {
   table: ITable;
+  onRename: (d:string)=>void
 };
 
-const DbManagerTablesItem: React.FC<Props> = ({table})=>{
+const DbManagerTablesItem: React.FC<Props> = ({table, onRename})=>{
   const location = useLocation();
+
+  const renameHandle = ()=>{
+    onRename(table.name);
+  }
 
   return(
     <tr>
@@ -20,7 +25,10 @@ const DbManagerTablesItem: React.FC<Props> = ({table})=>{
       <td>{table.createAt}</td>
       <td>{table.changeAt}</td>
       <td>{table.version}</td>
-      <td>Actions</td>
+      <td>
+        <button onClick={renameHandle}>rename</button>
+        <button>Del</button>
+      </td>
       <td>{table.rows}</td>
     </tr>
   );

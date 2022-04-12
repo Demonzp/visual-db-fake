@@ -1,3 +1,7 @@
 .col{
   flex-direction: column;
 }
+
+td{
+  text-align: center;
+}

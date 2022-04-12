@@ -1,5 +1,5 @@
 const path = require('path');
-const { writeFile, mkdir, unlink } = require('fs/promises');
+const { writeFile, mkdir, unlink, rename } = require('fs/promises');
 const { isFileExist, readJson } = require('../utils/fsUtils');
 const { pathTables, pathDB, pathData, upDate, createId } = require('../utils/global');
 
@@ -46,7 +46,6 @@ const validationCreateTable = (body) => {
   }
 }
 
-
 const createTable = async (req, res) => {
   try {
     let validData;
@@ -76,7 +75,6 @@ const createTable = async (req, res) => {
         res.status(412).json({ field: 'nameTable', message: `table "${validData}" already exists` });
         return;
       }
-
     }
     console.log('dbData = ', dbData);
     const data = {
@@ -101,6 +99,63 @@ const createTable = async (req, res) => {
   } catch (error) {
     console.log('error = ', error.message);
     res.status(400).json({ message: error.message });
+  }
+};
+
+const renameTable = async (req, res)=>{
+  try {
+    let validData;
+    const oldNameTable = req.body.oldNameTable;
+    const dbId = req.body.dbId;
+
+    try {
+      validData = validationCreateTable(req.body);
+    } catch (error) {
+      res.status(412).json({ field: 'nameTable', message: error.message });
+      return;
+    }
+
+    const dbFile = path.join(pathDB, dbId + '.json');
+    const dbData = await readJson(dbFile);
+
+    await detectPathTable();
+
+    const filePathNew = path.join(pathTables, dbId + '_' + validData + '.json');
+    const filePathOld = path.join(pathTables, dbId + '_' + oldNameTable + '.json');
+
+    try {
+      await isFileExist(filePath);
+      res.status(412).json({ field: 'nameTable', message: `table "${validData}" already exists` });
+      return;
+
+    } catch (error) {
+      if (dbData.tables.find(name => name === validData)) {
+        res.status(412).json({ field: 'nameTable', message: `table "${validData}" already exists` });
+        return;
+      }
+    }
+
+    dbData.tables = dbData.tables.map(name=>{
+      if(name===oldNameTable){
+        return validData;
+      }
+      return name;
+    });
+
+    upDate(dbData);
+
+    const oldTableData = await readJson(filePathOld);
+
+    upDate(oldTableData);
+
+    await unlink(filePathOld);
+    await writeFile(filePathNew, JSON.stringify(oldTableData));
+    await writeFile(dbFile, JSON.stringify(dbData));
+
+    res.json({ db: dbData, table: data });
+
+  } catch (error) {
+    
   }
 };
 
@@ -550,5 +605,6 @@ module.exports = {
   getTableData,
   addRowToTable,
   clearTable,
-  delTableRow
+  delTableRow,
+  renameTable
 }
